@@ -1085,10 +1085,7 @@ class Rule(object):
             pred_vect = active_vect * pred
             cplt_val = calc_prediction(1-active_vect, y)
             np.place(pred_vect, pred_vect == 0, cplt_val)
-
-            # pred_vect = np.extract(active_vect != 0, pred_vect)
-            # yreal = np.extract(active_vect != 0, yreal)
-
+            
             rez = calc_crit(pred_vect, yreal, ymean, ystd, method)
             self.set_params(crit=rez)
 
