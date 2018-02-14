@@ -32,7 +32,7 @@ Functions
 
 
 def make_rules(feature_name, feature_index, X, y, method, sini_crit,
-               th, cov_min, cov_max, yreal, ymean, ystd):
+               th, cov_max, yreal, ymean, ystd):
     """
     Evaluate all suitable rules (i.e satisfying all criteria)
     on a given feature.
@@ -59,9 +59,6 @@ def make_rules(feature_name, feature_index, X, y, method, sini_crit,
 
     th : {float type such as 0 < th < 1}
          The threshold for the type 1 error
-
-    cov_min : {float type such as 0 <= covmin <= 1}
-              The minimal coverage of one rule
 
     cov_max : {float type such as 0 <= covmax <= 1}
               The maximal coverage of one rule
@@ -105,7 +102,7 @@ def make_rules(feature_name, feature_index, X, y, method, sini_crit,
 
                 rule = Rule(conditions)
                 rules_list.append(eval_rule(rule, X, y, method, sini_crit, th,
-                                            cov_min, cov_max, yreal, ymean, ystd))
+                                            cov_max, yreal, ymean, ystd))
 
         else:
             bmax = bmin
@@ -119,14 +116,14 @@ def make_rules(feature_name, feature_index, X, y, method, sini_crit,
 
             rule = Rule(conditions)
             rules_list.append(eval_rule(rule, X, y, method, sini_crit, th,
-                                        cov_min, cov_max, yreal, ymean, ystd))
+                                        cov_max, yreal, ymean, ystd))
 
     rules_list = filter(None, rules_list)
     return rules_list
 
 
 def eval_rule(rule, X, y, method, sini_crit, th,
-              cov_min, cov_max, yreal, ymean, ystd):
+              cov_max, yreal, ymean, ystd):
     """
     Calculation of all statistics of an rules
 
@@ -150,9 +147,6 @@ def eval_rule(rule, X, y, method, sini_crit, th,
     th : {float type such as 0 < th < 1}
          The threshold for the type 1 error
 
-    cov_min : {float type such as 0 <= covmin <= 1}
-              The minimal coverage of one rule
-
     cov_max : {float type such as 0 <= covmax <= 1}
               The maximal coverage of one rule
 
@@ -175,8 +169,8 @@ def eval_rule(rule, X, y, method, sini_crit, th,
     """
     rule.calc_stats(x=X, y=y, method=method,
                     sini_crit=sini_crit, th=th,
-                    cov_min=cov_min, cov_max=cov_max,
-                    yreal=yreal, ymean=ymean, ystd=ystd)
+                    cov_max=cov_max, yreal=yreal,
+                    ymean=ymean, ystd=ystd)
 
     if rule.get_param('out') is False:
         return rule
@@ -320,7 +314,7 @@ def get_variables_count(ruleset):
             Counter of all diffrent features in the ruleset
     """
     col_varuleset = map(lambda rg: rg.conditions.get_param('features_name'),
-                         ruleset)
+                        ruleset)
     varuleset_list = reduce(operator.add, col_varuleset)
     count = Counter(varuleset_list)
 
@@ -1021,8 +1015,8 @@ class Rule(object):
 
     def calc_stats(self, x, y, method='mse_function',
                    sini_crit='hoeffding', th=0.05,
-                   cov_min=0.01, cov_max=0.5,
-                   yreal=None, ymean=0, ystd=1):
+                   cov_max=0.5, yreal=None, ymean=0,
+                   ystd=1):
         """
         Calculation of all statistics of an rules
 
@@ -1042,9 +1036,6 @@ class Rule(object):
 
         th : {float type such as 0 < th < 1}, default 0.05
              The threshold for the type 1 error
-
-        cov_min : {float type such as 0 <= covmin <= 1}, default 0.01
-                  The minimal coverage of one rule
 
         cov_max : {float type such as 0 <= covmax <= 1}, default 0.5
                   The maximal coverage of one rule
@@ -1070,7 +1061,7 @@ class Rule(object):
         cov = calc_coverage(active_vect)
         self.set_params(cov=cov)
         
-        if cov < cov_min or cov > cov_max:
+        if cov > cov_max or cov == 0:
             self.set_params(out=True)
             self.set_params(reason='Cov')
             return
@@ -1638,21 +1629,13 @@ class Learning(BaseEstimator):
         # Creation of data-driven parameters
         if hasattr(self, 'nb_bucket') is False:
             nb_bucket = max(5, int(np.sqrt(pow(X.shape[0],
-                                              1./X.shape[1]))))
+                                               1./X.shape[1]))))
 
             nb_bucket = min(nb_bucket, X.shape[0])
             self.set_params(nb_bucket=nb_bucket)
 
         if hasattr(self, 'covmin') is False:
-            try:
-                covmin = 1.0 / (pow(self.get_param('nb_bucket'),
-                                    X.shape[1]))
-                covmin = max(sys.float_info.epsilon, covmin)
-
-            # For a very high dimension
-            except OverflowError:
-                covmin = sys.float_info.epsilon
-
+            covmin = sys.float_info.epsilon
             self.set_params(covmin=covmin)
 
         if hasattr(self, 'covmax') is False:
@@ -1784,21 +1767,20 @@ class Learning(BaseEstimator):
         yreal = self.get_param('yreal')
         ymean = self.get_param('ymean')
         ystd = self.get_param('ystd')
-        cov_min = self.get_param('covmin')
         cov_max = self.get_param('covmax')
 
         jobs = min(len(features_name), self.get_param('nb_jobs'))
 
         if jobs == 1:
             ruleset = map(lambda var, idx: make_rules(var, idx, X, y, method,
-                                                       sini_crit, th,
-                                                       cov_min, cov_max,
-                                                       yreal, ymean, ystd),
-                           features_name, features_index)
+                                                      sini_crit, th,
+                                                      cov_max, yreal, ymean,
+                                                      ystd),
+                          features_name, features_index)
         else:
             ruleset = Parallel(n_jobs=jobs, backend="multiprocessing")(
                 delayed(make_rules)(var, idx, X, y, method, sini_crit, th,
-                                    cov_min, cov_max, yreal, ymean, ystd)
+                                    cov_max, yreal, ymean, ystd)
                 for var, idx in zip(features_name, features_index))
 
         ruleset = reduce(operator.add, ruleset)
@@ -1823,7 +1805,6 @@ class Learning(BaseEstimator):
         yreal = self.get_param('yreal')
         ymean = self.get_param('ymean')
         ystd = self.get_param('ystd')
-        cov_min = self.get_param('covmin')
         cov_max = self.get_param('covmax')
 
         rules_list = self.find_candidates(cp)
@@ -1831,12 +1812,12 @@ class Learning(BaseEstimator):
         if len(rules_list) > 0:
             if nb_jobs == 1:
                 ruleset = map(lambda rule: eval_rule(rule, X, y, method, sini_crit, th,
-                                                      cov_min, cov_max, yreal, ymean, ystd),
-                               rules_list)
+                                                     cov_max, yreal, ymean, ystd),
+                              rules_list)
             else:
                 ruleset = Parallel(n_jobs=nb_jobs, backend="multiprocessing")(
                     delayed(eval_rule)(rule, X, y, method, sini_crit, th,
-                                       cov_min, cov_max, yreal, ymean, ystd)
+                                       cov_max, yreal, ymean, ystd)
                     for rule in rules_list)
 
             ruleset = filter(None, ruleset)
@@ -1845,47 +1826,36 @@ class Learning(BaseEstimator):
         else:
             return []
 
-    def select_candidates(self, rules_cp, cp, cov_min=0.05):
+    def select_candidates(self, rules_cp):
         """
         Returns a selection of candidates to increase complexity
-        for a given complexity (cp) and a min coverage (cov_min)
+        for a given complexity (cp)
         """
         ruleset = self.get_param('ruleset')
-        sub_ruleset = ruleset.extract_cp(rules_cp)
-
-        bool_vect = map(lambda rg: rg.get_param('cov') >=
-                        0.5 * pow(cov_min, float(rg.get_param('cp')) / cp),
-                        sub_ruleset)
-
-        extract = np.extract(bool_vect, sub_ruleset)
-        rules_list = list(extract)
+        ruleset_candidats = ruleset.extract_cp(rules_cp)
 
         nb_candidats = self.get_param('nb_candidats')
-        if len(rules_list) > nb_candidats:
-            ruleset_candidats = RuleSet(list(rules_list))
-
+        if len(ruleset_candidats) > nb_candidats:
             pos_ruleset = ruleset_candidats.extract_greater('pred', 0)
             neg_ruleset = ruleset_candidats.extract_least('pred', 0)
 
-            id_pos = float(len(pos_ruleset)) / len(rules_list) * nb_candidats
-            id_neg = float(len(neg_ruleset)) / len(rules_list) * nb_candidats
+            id_pos = float(len(pos_ruleset)) / len(ruleset_candidats) * nb_candidats
+            id_neg = float(len(neg_ruleset)) / len(ruleset_candidats) * nb_candidats
 
             rules_list = pos_ruleset[:int(id_pos)]
             rules_list += neg_ruleset[:int(id_neg)]
 
-        ruleset = RuleSet(list(rules_list))
-        return ruleset
+            ruleset_candidats = RuleSet(list(rules_list))
+        return ruleset_candidats
     
     def find_candidates(self, cp):
         """
         Returns the intersection of all suitable rules
-        for a given complexity (cp) and a min coverage (cov_min)
+        for a given complexity (cp)
         """
-        cov_min = self.get_param('covmin')
+        ruleset_cp1 = self.select_candidates(1)
 
-        ruleset_cp1 = self.select_candidates(1, cp, cov_min)
-
-        ruleset_candidate = self.select_candidates(cp - 1, cp, cov_min)
+        ruleset_candidate = self.select_candidates(cp - 1)
 
         if len(ruleset_candidate) > 0:
             rules_list = self.find_complexe_rules(cp, ruleset_cp1,
@@ -1955,7 +1925,7 @@ class Learning(BaseEstimator):
         # Then optimization
         selected_rs = RuleSet(ruleset[:1])
         old_crit = calc_ruleset_crit(selected_rs, yapp, yreal,
-                                      ymean, ystd, method)
+                                     ymean, ystd, method)
         crit_evo = [old_crit]
         nb_rules = len(ruleset)
 
@@ -2001,7 +1971,7 @@ class Learning(BaseEstimator):
 
             if len(ruleset_list) > 0:
                 crit_list = map(lambda e: calc_ruleset_crit(e, yapp, yreal,
-                                                             ymean, ystd, method),
+                                                            ymean, ystd, method),
                                 ruleset_list)
 
                 if maximized:
@@ -2079,8 +2049,6 @@ class Learning(BaseEstimator):
             
         sample_weight : {array type of shape = [n_samples], optional
             Sample weights.
-
-        agg_method : string type
 
         Returns
         -------
