@@ -6,7 +6,7 @@ Implementation of a rule based prediction algorithm called RIPE (Rule Induction 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
- RIPE is developed in Python version 2.7.
+RIPE is developed in Python version 2.7. It requires some usual packages
 - NumPy (post 1.13.0)
 - Scikit-Learn (post 0.19.0)
 - Pandas (post 0.16.0)
@@ -25,38 +25,56 @@ sudo pip install package_name==version
 ### Installing
 
 The latest version can be installed from the master branch using pip:
-
 ```
 pip install git+git://github.com/VMargot/RIPE.git
 ```
-
 Another option is to clone the repository and install using ```python setup.py install``` or ```python setup.py develop```.
 
-## Running the tests
+## Usage
+RIPE has been developped to be used as a regressor from the package scikit-learn.
 
-Explain how to run the automated tests for this system
+### Training
+```
+from sklearn import datasets
+iris = datasets.load_iris()
+X, y = iris.data, iris.target
 
-### Break down into end to end tests
-
-Explain what these tests test and why
-
+ripe = RIPE.Learning()
+ripe.fit(X, y)
 ```
 
+### Predict
+```
+ripe.predict(X)
 ```
 
-### And coding style tests
-
-Explain what these tests test and why
-
+### Score
 ```
+ripe.score(X,y)
 ```
+
+### Inspect rules:
+To have the Pandas DataFrame of the selected rules
+```
+ripe.selected_rs.to_df()
+```
+To draw the distance between selected rules
+```
+ripe.plot_dist()
+```
+To draw the count of occurencies of varaibles in the selected rules
+```
+ripe.plot_counter_variables()
+```
+
+## Notes
+This implementation is in progress. If you find a bug, or something witch could be improve don't hesitate to contact me.
 
 ## Authors
-
 * **Vincent Margot**
 
 See also the list of [contributors](https://github.com/VMargot/RIPE/contributors) who participated in this project.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the GNU v3.0 - see the [LICENSE.md](LICENSE.md) file for details
