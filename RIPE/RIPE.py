@@ -742,15 +742,43 @@ class RuleCondditions(object):
     def __init__(self, features_name, features_index,
                  bmin, bmax, xmin, xmax, values=list([])):
         
+        assert isinstance(features_name, collections.Iterable), \
+                'Type of parameter must be iterable' % features_name
         self.features_name = features_name
+        cp = len(features_name)
+
+        assert isinstance(features_index, collections.Iterable), \
+            'Type of parameter must be iterable' % features_name
+        assert len(features_index) == cp, \
+            'Parameters must have the same length' % features_name
         self.features_index = features_index
+
+        assert isinstance(bmin, collections.Iterable), \
+            'Type of parameter must be iterable' % features_name
+        assert len(bmin) == cp, \
+            'Parameters must have the same length' % features_name
+        assert isinstance(bmax, collections.Iterable), \
+            'Type of parameter must be iterable' % features_name
+        assert len(bmax) == cp, \
+            'Parameters must have the same length' % features_name
         if type(bmin[0]) != np.string_:
             assert all(map(lambda a, b: a <= b, bmin, bmax)), \
-                'Bmin must be smaller or equal than bmax (%s)' % features_name
+                'Bmin must be smaller or equal than bmax (%s)' \
+                % features_name
         self.bmin = bmin
         self.bmax = bmax
+
+        assert isinstance(xmax, collections.Iterable), \
+            'Type of parametre must be iterable' % features_name
+        assert len(xmax) == cp, \
+            'Parameters must have the same length' % features_name
+        assert isinstance(xmin, collections.Iterable), \
+            'Type of parameter must be iterable' % features_name
+        assert len(xmin) == cp, \
+            'Parameters must have the same length' % features_name
         self.xmin = xmin
         self.xmax = xmax
+
         self.values = [values]
 
     def __repr__(self):
