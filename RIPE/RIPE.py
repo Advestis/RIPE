@@ -6,6 +6,7 @@ Created on 22 sept. 2016
 import sys
 import copy
 import operator
+import collections
 from collections import Counter
 
 import numpy as np
@@ -91,13 +92,13 @@ def make_rules(feature_name, feature_index, X, y, method, sini_crit,
         j = values.index(bmin)
         if xcol.dtype != np.str:
             for bmax in values[j:]:
-                conditions = RuleCondditions(features_name=[feature_name],
-                                             features_index=[feature_index],
-                                             bmin=[bmin],
-                                             bmax=[bmax],
-                                             xmax=[max(values)],
-                                             xmin=[min(values)],
-                                             values=values)
+                conditions = RuleConditions(features_name=[feature_name],
+                                            features_index=[feature_index],
+                                            bmin=[bmin],
+                                            bmax=[bmax],
+                                            xmax=[max(values)],
+                                            xmin=[min(values)],
+                                            values=values)
 
                 rule = Rule(conditions)
                 rules_list.append(eval_rule(rule, X, y, method, sini_crit, th,
@@ -105,13 +106,13 @@ def make_rules(feature_name, feature_index, X, y, method, sini_crit,
 
         else:
             bmax = bmin
-            conditions = RuleCondditions(features_name=[feature_name],
-                                         features_index=[feature_index],
-                                         bmin=[bmin],
-                                         bmax=[bmax],
-                                         xmax=[max(values)],
-                                         xmin=[min(values)],
-                                         values=values)
+            conditions = RuleConditions(features_name=[feature_name],
+                                        features_index=[feature_index],
+                                        bmin=[bmin],
+                                        bmax=[bmax],
+                                        xmax=[max(values)],
+                                        xmin=[min(values)],
+                                        values=values)
 
             rule = Rule(conditions)
             rules_list.append(eval_rule(rule, X, y, method, sini_crit, th,
@@ -734,13 +735,13 @@ def discretize(xcol, nb_bucket, bins=None):
         return xcol
 
 
-class RuleCondditions(object):
+class RuleConditions(object):
     """
     Class for binary rule condition
     """
     def __init__(self, features_name, features_index,
                  bmin, bmax, xmin, xmax, values=list([])):
-        
+
         assert isinstance(features_name, collections.Iterable), \
                 'Type of parameter must be iterable' % features_name
         self.features_name = features_name
@@ -791,9 +792,10 @@ class RuleCondditions(object):
         return self.__hash__() == other.__hash__()
     
     def __hash__(self):
-        to_hash = [(self.features_index[i], self.bmin[i], self.bmax[i])
+        to_hash = [(self.features_index[i], self.features_name[i],
+                    self.bmin[i], self.bmax[i])
                    for i in range(len(self.features_index))]
-        to_hash = tuple(to_hash)
+        to_hash = frozenset(to_hash)
         return hash(to_hash)
 
     def transform(self, xmat):
@@ -819,6 +821,9 @@ class RuleCondditions(object):
         for i in range(cp):
             col_index = self.features_index[i]
             x_col = xmat[:, col_index]
+
+            # Turn x_col to array
+            x_col = np.squeeze(np.asarray(x_col))
 
             if type(self.bmin[i]) == str:
                 x_col = np.array(x_col, dtype=np.str)
@@ -858,7 +863,7 @@ class RuleCondditions(object):
     def get_attr(self):
         """
         To get a list of attributes of self.
-        It is usefull to quickly create a RuleCondditions
+        It is usefull to quickly create a RuleConditions
         from intersection of two rules 
         """
         return [self.features_name,
@@ -886,8 +891,8 @@ class Rule(object):
     def __init__(self,
                  rule_conditions):
         
-        assert rule_conditions.__class__ == RuleCondditions, \
-            'Must be a RuleConddition object'
+        assert rule_conditions.__class__ == RuleConditions, \
+            'Must be a RuleCondition object'
         
         self.conditions = rule_conditions
         self.cp = len(rule_conditions.get_param('features_index'))
@@ -1003,7 +1008,7 @@ class Rule(object):
     
     def intersect_conditions(self, rule):
         """
-        Compute an RuleConddition object from the intersection of an rule
+        Compute an RuleCondition object from the intersection of an rule
         (self) and an other (rulessert)
         """
         conditions_1 = self.conditions
@@ -1026,12 +1031,12 @@ class Rule(object):
             if activation is not None:
                 conditions_list = self.intersect_conditions(rule)
                 
-                new_conditions = RuleCondditions(features_name=conditions_list[0],
-                                                 features_index=conditions_list[1],
-                                                 bmin=conditions_list[2],
-                                                 bmax=conditions_list[3],
-                                                 xmax=conditions_list[5],
-                                                 xmin=conditions_list[4])
+                new_conditions = RuleConditions(features_name=conditions_list[0],
+                                                features_index=conditions_list[1],
+                                                bmin=conditions_list[2],
+                                                bmax=conditions_list[3],
+                                                xmax=conditions_list[5],
+                                                xmin=conditions_list[4])
                 new_rule = Rule(new_conditions)
                 new_rule.set_params(activation=activation)
                 return new_rule
@@ -1409,6 +1414,10 @@ class RuleSet(object):
         self.rules.sort(key=lambda x: x.get_param(crit),
                         reverse=maximized)
 
+    def drop_duplicates(self):
+        rules_list = list(set(self.rules))
+        return RuleSet(rules_list)
+
     def to_df(self, cols=None):
         """
         To transform an ruleset into a pandas DataFrame
@@ -1736,15 +1745,16 @@ class Learning(BaseEstimator):
 
         selected_rs = self.get_param('selected_rs')
 
-        # ------------
-        # SEEKING PART
-        # ------------
+        # -----------
+        # DESIGN PART
+        # -----------
 
         self.calc_cp1()
         ruleset = self.get_param('ruleset')
 
         if len(ruleset) > 0:
             for cp in range(2, complexity + 1):
+                print('Design for complexity %s' % str(cp))
                 if len(selected_rs.extract_cp(cp)) == 0:
                     # seeking a set of rules with a comlexity cp
                     ruleset_cpup = self.up_complexity(cp)
@@ -1849,6 +1859,7 @@ class Learning(BaseEstimator):
 
             ruleset = filter(None, ruleset)
             ruleset_cpup = RuleSet(ruleset)
+            ruleset_cpup = ruleset_cpup.drop_duplicates()
             return ruleset_cpup
         else:
             return []
