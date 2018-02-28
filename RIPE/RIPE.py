@@ -4,7 +4,6 @@ Created on 22 sept. 2016
 @author: VMargot
 """
 import sys
-import math
 import copy
 import operator
 from collections import Counter
