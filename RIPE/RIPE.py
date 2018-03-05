@@ -944,26 +944,13 @@ class Rule(object):
         """
         c1 = self.conditions
         c2 = rule.conditions
-        
+
         c1_name = c1.get_param('features_name')
         c2_name = c2.get_param('features_name')
-
-        if self.get_param('cp') == 1 and rule.get_param('cp') == 1:
-            return c1_name[0] == c2_name[0]
-
-        elif self.get_param('cp') > 1 and rule.get_param('cp') == 1:
-            return any(map(lambda var: c2_name[0] == var,
-                           c1_name))
-
-        elif self.get_param('cp') == 1 and rule.get_param('cp') > 1:
-            return any(map(lambda var: c1_name[0] == var,
-                           c2_name))
-
+        if len(set(c1_name).intersection(c2_name)) != 0:
+            return True
         else:
-            if len(set(c1_name).intersection(c2_name)) != 0:
-                return False
-            else:
-                return True
+            return False
     
     def test_cp(self, rule, cp):
         """
