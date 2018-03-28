@@ -1,9 +1,11 @@
 # RIPE
-Implementation of a rule based prediction algorithm called RIPE (Rule Induction Partitioning Estimate). RIPE is a deterministic and interpretable algorithm.
+Implementation of a rule based prediction algorithm called RIPE (Rule Induction
+Partitioning Estimate). RIPE is a deterministic and interpretable algorithm.
 
 ## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your
+local machine for development and testing purposes. See deployment for notes
+on how to deploy the project on a live system.
 
 ### Prerequisites
 RIPE is developed in Python version 2.7. It requires some usual packages
@@ -14,6 +16,7 @@ RIPE is developed in Python version 2.7. It requires some usual packages
 - Matplotlib (post 2.0.2) 
 - Seaborn (post 0.8.1)
 
+See **requirements.txt**.
 ```
 sudo pip install package_name
 ```
@@ -28,10 +31,11 @@ The latest version can be installed from the master branch using pip:
 ```
 pip install git+git://github.com/VMargot/RIPE.git
 ```
-Another option is to clone the repository and install using ```python setup.py install``` or ```python setup.py develop```.
+Another option is to clone the repository and install using ```python setup.py
+install``` or ```python setup.py develop```.
 
 ## Usage
-RIPE has been developped to be used as a regressor from the package scikit-learn.
+RIPE has been developed to be used as a regressor from the package scikit-learn.
 
 ### Training
 ```
@@ -62,19 +66,22 @@ To draw the distance between selected rules
 ```
 ripe.plot_dist()
 ```
-To draw the count of occurencies of varaibles in the selected rules
+To draw the count of occurrence of variables in the selected rules
 ```
 ripe.plot_counter_variables()
 ```
 
 ## Notes
-This implementation is in progress. If you find a bug, or something witch could be improve don't hesitate to contact me.
+This implementation is in progress. If you find a bug, or something witch could
+be improve don't hesitate to contact me.
 
 ## Authors
 * **Vincent Margot**
 
-See also the list of [contributors](https://github.com/VMargot/RIPE/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/VMargot/RIPE/contributors)
+who participated in this project.
 
 ## License
 
-This project is licensed under the GNU v3.0 - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the GNU v3.0 - see the [LICENSE.md](LICENSE.md)
+file for details
