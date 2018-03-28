@@ -6,6 +6,7 @@ Created on 22 sept. 2016
 import sys
 import copy
 import operator
+import functools
 import collections
 from collections import Counter
 
@@ -315,7 +316,7 @@ def get_variables_count(ruleset):
     """
     col_varuleset = map(lambda rg: rg.conditions.get_param('features_name'),
                         ruleset)
-    varuleset_list = reduce(operator.add, col_varuleset)
+    varuleset_list = functools.reduce(operator.add, col_varuleset)
     count = Counter(varuleset_list)
 
     count = count.most_common()
@@ -1389,6 +1390,9 @@ class RuleSet(object):
                         reverse=maximized)
 
     def drop_duplicates(self):
+        """
+        Drop duplicates rules in RuleSet object (self)
+        """
         rules_list = list(set(self.rules))
         return RuleSet(rules_list)
 
@@ -1785,7 +1789,7 @@ class Learning(BaseEstimator):
                                     cov_max, yreal, ymean, ystd)
                 for var, idx in zip(features_name, features_index))
 
-        ruleset = reduce(operator.add, ruleset)
+        ruleset = functools.reduce(operator.add, ruleset)
 
         ruleset = RuleSet(ruleset)
         ruleset.sort_by('crit', self.get_param('maximized'))
@@ -1881,7 +1885,7 @@ class Learning(BaseEstimator):
                 delayed(find_upcp)(rule, ruleset_cp1, cp)
                 for rule in ruleset_candidate)
 
-        rules_list = reduce(operator.add, rules_list)
+        rules_list = functools.reduce(operator.add, rules_list)
 
         rules_list = filter(None, rules_list)  # to drop bad rules
         rules_list = list(set(rules_list))  # to drop duplicates
