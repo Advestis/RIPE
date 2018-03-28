@@ -865,7 +865,7 @@ class RuleConditions(object):
         """
         To get a list of attributes of self.
         It is useful to quickly create a RuleConditions
-        from intersection of two rules 
+        from intersection of two rules
         """
         return [self.features_name,
                 self.features_index,
@@ -1138,7 +1138,7 @@ class Rule(object):
     def score(self, x, y, sample_weight=None, score_type='Rate'):
         """
         Returns the coefficient of determination R^2 of the prediction
-        if y is continuous. Else if y in {0,1} then Returns the mean 
+        if y is continuous. Else if y in {0,1} then Returns the mean
         accuracy on the given test data and labels {0,1}.
         
         Parameters
@@ -1176,7 +1176,7 @@ class Rule(object):
         
         elif score_type == 'Regression':
             return r2_score(y, pred_vect, sample_weight=sample_weight,
-                            multioutput='variance_weighted')            
+                            multioutput='variance_weighted')
 
     def make_name(self, num, learning=None):
         """
@@ -1340,7 +1340,7 @@ class RuleSet(object):
         Extract a RuleSet object from self such as each rules have a param
         greater than val.
         """
-        rules_list = filter(lambda rg: rg.get_param(param) > val, self)        
+        rules_list = filter(lambda rg: rg.get_param(param) > val, self)
         return RuleSet(rules_list)
     
     def extract_least(self, param, val):
@@ -1709,7 +1709,6 @@ class Learning(BaseEstimator):
         then selects the best subset by minimization
         of the empirical risk
         """
-
         complexity = self.get_param('cp')
         maximized = self.get_param('maximized')
         
@@ -1762,7 +1761,9 @@ class Learning(BaseEstimator):
             print('No rules found !')
 
     def calc_cp1(self):
-        """ Compute all rules of complexity one and keep the best. """
+        """
+        Compute all rules of complexity one and keep the best.
+        """
         features_name = self.get_param('features_name')
         features_index = self.get_param('features_index')
         X = self.get_param('X')
@@ -1797,7 +1798,9 @@ class Learning(BaseEstimator):
         self.set_params(ruleset=ruleset)
     
     def up_complexity(self, cp):
-        """ Returns a ruleset of rules with complexity=cp. """
+        """
+        Returns a ruleset of rules with complexity=cp.
+        """
         nb_jobs = self.get_param('nb_jobs')
         X = self.get_param('X')
         method = self.get_param('calcmethod')
@@ -1870,10 +1873,8 @@ class Learning(BaseEstimator):
     
     def find_complexe_rules(self, cp, ruleset_cp1, ruleset_candidate):
         """
-        :param cp:
-        :param ruleset_cp1:
-        :param ruleset_candidate:
-        :return:
+        Returns a list of Rule object designing by intersection of rule from
+        ruleset_cp1 and rule from ruleset_candidate
         """
         nb_jobs = self.get_param('nb_jobs')
 
@@ -2039,7 +2040,7 @@ class Learning(BaseEstimator):
     def score(self, x, y, sample_weight=None):
         """
         Returns the coefficient of determination R^2 of the prediction
-        if y is continuous. Else if y in {0,1} then Returns the mean 
+        if y is continuous. Else if y in {0,1} then Returns the mean
         accuracy on the given test data and labels {0,1}.
         
         Parameters
@@ -2070,7 +2071,7 @@ class Learning(BaseEstimator):
         if len(nan_val) > 0:
             pred_vect = np.delete(pred_vect, nan_val)
             y = np.delete(y, nan_val)
-                
+            
         if len(set(y)) == 2:
             th_val = (min(y) + max(y)) / 2.0
             pred_vect = np.array(map(lambda p: min(y) if p < th_val else max(y),
@@ -2082,7 +2083,9 @@ class Learning(BaseEstimator):
 
     """------   Data functions   -----"""
     def validate_X_predict(self, X, check_input):
-        """Validate X whenever one tries to predict, apply, predict_proba"""
+        """
+        Validate X whenever one tries to predict, apply, predict_proba
+        """
         if hasattr(self, 'fitted') is False:
             raise AttributeError("Estimator not fitted, "
                                  "call 'fit' before exploiting the model.")
@@ -2157,10 +2160,10 @@ class Learning(BaseEstimator):
         
         Parameters
         ----------
-        var1 : {string type} 
+        var1 : {string type}
                Name of the first variable
         
-        var2 : {string type} 
+        var2 : {string type}
                Name of the second variable
         
         cp : {int type}, optional
@@ -2242,7 +2245,7 @@ class Learning(BaseEstimator):
             plt.gca().set_title('rules cp%s activations' % str(cp))
 
         plt.gca().axis([-0.1, nb_bucket - 0.9, -0.1, nb_bucket - 0.9])
-            
+        
     def plot_pred(self, x, y, var1, var2, cmap=None,
                   vmin=None, vmax=None, add_points=True,
                   add_score=False):
@@ -2258,10 +2261,10 @@ class Learning(BaseEstimator):
         y : {array-like}, shape=[n_samples]
             Target vector relative to X
             
-        var1 : {int type} 
+        var1 : {int type}
                Number of the column of the first variable
         
-        var2 : {int type} 
+        var2 : {int type}
                Number of the column of the second variable
         
         cmap : {colormap object}, optional
@@ -2304,7 +2307,7 @@ class Learning(BaseEstimator):
             vmax = max(z)
             
         z = z.reshape(xx.shape)
-                    
+        
         plt.contourf(xx, yy, z, cmap=cmap, alpha=.8, vmax=vmax, vmin=vmin)
         
         if add_points:
@@ -2414,7 +2417,6 @@ class Learning(BaseEstimator):
         """
         Function plots a graphical counter of variables used in rules.
         """
-
         y_labels, counter = self.make_count_matrix(return_vars=True)
         intensity = self.make_count_matrix(add_pred=True)
 
