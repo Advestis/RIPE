@@ -39,7 +39,7 @@ def make_rules(feature_name, feature_index, X, y, method, sini_crit,
 
     Parameters
     ----------
-    feature_name : {str type}
+    feature_name : {string type}
                    Name of the feature
 
     feature_index : {int type}
@@ -499,7 +499,7 @@ def calc_zscore(active_vect, y, th):
 
     Return
     ------
-    The bound for the conditional rulesectation to be significant
+    The bound for the conditional expectation to be significant
     """
     nb_activation = np.sum(np.extract(active_vect, np.isfinite(y)))
     num = np.sqrt(nb_activation)
@@ -529,7 +529,7 @@ def calc_tscore(active_vect, y, th):
 
     Return
     ------
-    The bound for the conditional rulesectation to be significant
+    The bound for the conditional expectation to be significant
     """
     nb_activation = np.sum(np.extract(active_vect, np.isfinite(y)))
     num = np.sqrt(nb_activation)
@@ -559,7 +559,7 @@ def calc_hoeffding(active_vect, y, th):
 
     Return
     ------
-    The bound for the conditional rulesectation to be significant
+    The bound for the conditional expectation to be significant
     """
     sub_y = np.extract(active_vect, y)
     y_max = np.nanmax(sub_y)
@@ -590,7 +590,7 @@ def calc_bernstein(active_vect, y, th):
 
     Return
     ------
-    The bound for the conditional rulesectation to be significant
+    The bound for the conditional expectation to be significant
     """
     sub_y = np.extract(active_vect, y)
     y_max = np.nanmax(sub_y)
@@ -624,7 +624,7 @@ def calc_coverage(vect):
 
 def calc_prediction(active_vect, y):
     """
-    Compute the empirical conditional rulesectation of y
+    Compute the empirical conditional expectation of y
     knowing X
 
     Parameters
@@ -640,7 +640,7 @@ def calc_prediction(active_vect, y):
     Return
     ------
     pred : {float type}
-           the empirical conditional rulesectation of y
+           The empirical conditional expectation of y
            knowing X
     """
     y_cond = np.extract(active_vect != 0, y)
@@ -661,12 +661,12 @@ def find_bins(xcol, nb_bucket):
            Serie to discretize
 
     nb_bucket : {int type}
-                number of modalities
+                Number of modalities
 
     Return
     ------
     bins : {ndarray type}
-           the bins for disretization (result from numpy percentile function)
+           The bins for disretization (result from numpy percentile function)
     """
     # Find the bins for nb_bucket
     q_list = np.arange(100.0 / nb_bucket, 100.0, 100.0 / nb_bucket)
@@ -702,15 +702,15 @@ def discretize(xcol, nb_bucket, bins=None):
            Serie to discretize
 
     nb_bucket : {int type}
-                number of modalities
+                Number of modalities
 
     bins : {ndarray type}, optional, default None
-           if you have already calculate the bins for xcol
+           If you have already calculate the bins for xcol
 
     Return
     ------
     xcol_discretized : {Series type}
-                       the discretization of xcol
+                       The discretization of xcol
     """
     if xcol.dtype.type != np.object_:
         # extraction of the list of xcol values
@@ -1164,11 +1164,10 @@ class Rule(object):
             Mean accuracy of self.predict(X) wrt. y in {0,1}
         """
         pred_vect = self.predict(x)
-
-        nan_val = np.argwhere(np.isnan(y))
-        if len(nan_val) > 0:
-            new_index = y.dropna(inplace=True).index
-            pred_vect = pred_vect.loc[new_index]
+        
+        y = np.extract(np.isfinite(y), y)
+        pred_vect = np.extract(np.isfinite(y), pred_vect)
+        
         if score_type == 'Classification':
             th_val = (min(y) + max(y)) / 2.0
             pred_vect = np.array(map(lambda p: min(y) if p < th_val else max(y), pred_vect))
@@ -1184,10 +1183,10 @@ class Rule(object):
 
         Parameters
         ----------
-        num : {int type}
+        num : int
               index of the rule in an ruleset
 
-        learning : {leanring type}, default None
+        learning : Leanring object, default None
                    If leaning is not None the name of self will
                    be definied with the name of learning
         """
@@ -1464,7 +1463,7 @@ class RuleSet(object):
         # Calculation of the binary vector for cells of the partition et each row
         cells = ((dot_activation - dot_noactivation) > 0)
 
-        # Calculation of the conditional rulesectation in each cell
+        # Calculation of the conditional expectation in each cell
         pred_vect = map(lambda act: calc_prediction(act, y_app),
                         cells)
 
@@ -1637,17 +1636,12 @@ class Learning(BaseEstimator):
 
         features_name : {list}, optional
                         Name of each features
-
-        Returns
-        -------
-        return : {Learning type}
-                 return self
         """
 
         # Check type for data
-        X = check_array(X, dtype=None, force_all_finite=False)
+        X = check_array(X, dtype=None, force_all_finite=False)  # type: np.object_
         y = check_array(y, dtype=None, ensure_2d=False,
-                        force_all_finite=False)
+                        force_all_finite=False)  # type: np.object_
 
         # Creation of data-driven parameters
         if hasattr(self, 'nb_bucket') is False:
@@ -1735,7 +1729,6 @@ class Learning(BaseEstimator):
         # -----------
         # DESIGN PART
         # -----------
-
         self.calc_cp1()
         ruleset = self.get_param('ruleset')
 
@@ -1777,10 +1770,7 @@ class Learning(BaseEstimator):
             print('No rules found !')
 
     def calc_cp1(self):
-        """
-        Compute all rules of complexity one and keep the best
-        """
-
+        """ Compute all rules of complexity one and keep the best. """
         features_name = self.get_param('features_name')
         features_index = self.get_param('features_index')
         X = self.get_param('X')
@@ -1815,11 +1805,7 @@ class Learning(BaseEstimator):
         self.set_params(ruleset=ruleset)
     
     def up_complexity(self, cp):
-        """
-        Returns a ruleset of rules with complexity=cp
-
-        :rtype: ruleset
-        """
+        """ Returns a ruleset of rules with complexity=cp. """
         nb_jobs = self.get_param('nb_jobs')
         X = self.get_param('X')
         method = self.get_param('calcmethod')
@@ -2110,7 +2096,7 @@ class Learning(BaseEstimator):
                                  "call 'fit' before rulesloiting the model.")
 
         if check_input:
-            X = check_array(X, dtype=None, force_all_finite=False)
+            X = check_array(X, dtype=None, force_all_finite=False)  # type: np.object_
 
             n_features = X.shape[1]
             input_features = self.get_param('features_name')
@@ -2315,7 +2301,7 @@ class Learning(BaseEstimator):
                              range(nb_bucket))
     
         if cmap is None:
-            cmap = plt.cm.coolwarm
+            cmap = plt.cm.get_cmap('coolwarm')
 
         z = selected_rs.predict(yapp, np.c_[np.round(xx.ravel()), np.round(yy.ravel())],
                                 ymean, ystd)
@@ -2350,7 +2336,7 @@ class Learning(BaseEstimator):
 
         if add_score:
             score = self.score(x, y)
-            plt.text(nb_bucket - .70, .08, ('%.2f' % score).lstrip('0'),
+            plt.text(nb_bucket - .70, .08, ('%.2f' % str(score)).lstrip('0'),
                      size=20, horizontalalignment='right')
         
         plt.axis([-0.01, nb_bucket - 0.99, -0.01, nb_bucket - 0.99])
