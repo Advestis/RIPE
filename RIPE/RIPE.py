@@ -52,7 +52,7 @@ def make_rules(feature_name, feature_index, X, y, method, sini_crit,
         The normalized target values (real numbers).
 
     method : {string type}
-             The methode mse_function or mse_function criterion
+             The method mse_function or mse_function criterion
 
     sini_crit : {string type}
                 The significance test
@@ -75,7 +75,7 @@ def make_rules(feature_name, feature_index, X, y, method, sini_crit,
     Return
     ------
     rules_list : {list type}
-               the list of all suitable rules on the choosen feature.
+               the list of all suitable rules on the chosen feature.
     """
     xcol = X[:, feature_index]
 
@@ -188,7 +188,7 @@ def find_upcp(rule, ruleset_cp1, cp):
              An rule object
 
     ruleset_cp1 : {ruleset type}
-                 A set of rule of complecity 1
+                 A set of rule of complexity 1
 
     cp : {int type, cp > 1}
          A given complexity
@@ -223,7 +223,7 @@ def union_test(ruleset, rule, j, inter_max):
              An rule object
 
     rule : {rule type}
-             A set of rule of complecity 1
+             A set of rule of complexity 1
 
     j : {int type or None}
         If j is not not we drop the j-th rule of ruleset
@@ -239,7 +239,7 @@ def union_test(ruleset, rule, j, inter_max):
                   the intersection test is satisfied
 
     None : If the intersection test between the new rule
-           and the set of exepert is not satisfied
+           and the set of rule is not satisfied
 
     """
     ruleset_copy = copy.deepcopy(ruleset)
@@ -287,12 +287,12 @@ def calc_ruleset_crit(ruleset, yapp, yreal, ymean, ystd, method):
            The standard deviation of y.
 
     method : {string type}
-             The methode mse_function or mse_function criterion
+             The method mse_function or mse_function criterion
 
     Return
     ------
     crit : {float type}
-           The value of the criterium for the method
+           The value of the criteria for the method
     """
     pred_vect = ruleset.calc_pred(y_app=yapp)
     crit = calc_crit(pred_vect, yreal, ymean, ystd, method)
@@ -311,7 +311,7 @@ def get_variables_count(ruleset):
     Return
     ------
     count : {Counter type}
-            Counter of all diffrent features in the ruleset
+            Counter of all different features in the ruleset
     """
     col_varuleset = map(lambda rg: rg.conditions.get_param('features_name'),
                         ruleset)
@@ -324,12 +324,12 @@ def get_variables_count(ruleset):
 
 def dist(u, v):
     """
-    Compute the distance bewteen two prediction vector
+    Compute the distance between two prediction vector
 
     Parameters
     ----------
     u,v : {array type}
-          A precictor vector. It means a sparse array with two
+          A predictor vector. It means a sparse array with two
           different values 0, if the rule is not active
           and the prediction is the rule is active.
 
@@ -355,7 +355,7 @@ def mse_function(pred_vect, y):
     Parameters
     ----------
     pred_vect : {array type}
-                A precictor vector. It means a sparse array with two
+                A predictor vector. It means a sparse array with two
                 different values ymean, if the rule is not active
                 and the prediction is the rule is active.
 
@@ -382,7 +382,7 @@ def mae_function(pred_vect, y):
     Parameters
     ----------
     pred_vect : {array type}
-                A precictor vector. It means a sparse array with two
+                A predictor vector. It means a sparse array with two
                 different values ymean, if the rule is not active
                 and the prediction is the rule is active.
 
@@ -409,7 +409,7 @@ def mape_function(pred_vect, y):
     Parameters
     ----------
     pred_vect : {array type}
-                A precictor vector. It means a sparse array with two
+                A predictor vector. It means a sparse array with two
                 different values ymean, if the rule is not active
                 and the prediction is the rule is active.
 
@@ -434,12 +434,12 @@ def calc_crit(pred_vect, y,
               ymean=0, ystd=1,
               method='mse_function'):
     """
-    Compute the criterium
+    Compute the criteria
 
     Parameters
     ----------
     pred_vect : {array type}
-                A precictor vector. It means a sparse array with two
+                A predictor vector. It means a sparse array with two
                 different values ymean, if the rule is not active
                 and the prediction is the rule is active.
 
@@ -453,12 +453,12 @@ def calc_crit(pred_vect, y,
            The standard deviation of y.
 
     method : {string type}
-             The methode mse_function or mse_function criterion
+             The method mse_function or mse_function criterion
 
     Return
     ------
     crit : {float type}
-           Criterium value
+           Criteria value
     """
 
     pred_vect *= ystd
@@ -604,7 +604,7 @@ def calc_bernstein(active_vect, y, th):
 
 def calc_coverage(vect):
     """
-    Compute the coverage rate of an activation vecto
+    Compute the coverage rate of an activation vector
 
     Parameters
     ----------
@@ -699,7 +699,7 @@ def discretize(xcol, nb_bucket, bins=None):
     Parameters
     ----------
     xcol : {Series type}
-           Serie to discretize
+           Series to discretize
 
     nb_bucket : {int type}
                 Number of modalities
@@ -807,7 +807,7 @@ class RuleConditions(object):
         Parameters
         ----------
         xmat: {array-like matrix, shape=(n_samples, n_features)}
-              Imput data
+              Input data
         
         Returns
         -------
@@ -863,7 +863,7 @@ class RuleConditions(object):
     def get_attr(self):
         """
         To get a list of attributes of self.
-        It is usefull to quickly create a RuleConditions
+        It is useful to quickly create a RuleConditions
         from intersection of two rules 
         """
         return [self.features_name,
@@ -1048,7 +1048,7 @@ class Rule(object):
             The normalized target values (real numbers).
 
         method : {string type}
-                 The methode mse_function or mse_function criterion
+                 The method mse_function or mse_function criterion
 
         sini_crit : {string type}
                     The significance test
@@ -1179,16 +1179,16 @@ class Rule(object):
 
     def make_name(self, num, learning=None):
         """
-        Add an attribut name to self
+        Add an attribute name to self
 
         Parameters
         ----------
         num : int
               index of the rule in an ruleset
 
-        learning : Leanring object, default None
+        learning : Learning object, default None
                    If leaning is not None the name of self will
-                   be definied with the name of learning
+                   be defined with the name of learning
         """
         name = 'R ' + str(num)
         cp = self.get_param('cp')
@@ -1306,16 +1306,14 @@ class RuleSet(object):
         
     def append(self, rule):
         """
-        :param rule:
-        :return:
+        Add one rule to a RuleSet object (self).
         """
         assert rule.__class__ == Rule, 'Must be a rule object (try extend)'
         self.rules.append(rule)
     
     def extend(self, ruleset):
         """
-        :param ruleset:
-        :return:
+        Add rules form a ruleset to a RuleSet object (self).
         """
         assert ruleset.__class__ == RuleSet, 'Must be a ruleset object'
         'ruleset must have the same Learning object'
@@ -1325,77 +1323,67 @@ class RuleSet(object):
     
     def insert(self, idx, rule):
         """
-        :param idx:
-        :param rule:
-        :return:
+        Insert one rule to a RuleSet object (self) at the position idx.
         """
         assert rule.__class__ == Rule, 'Must be a rule object'
         self.rules.insert(idx, rule)
     
     def pop(self, idx=None):
         """
-        :param idx:
-        :return:
+        Drop the rule at the position idx.
         """
         self.rules.pop(idx)
     
     def extract_greater(self, param, val):
         """
-        :param param:
-        :param val:
-        :return:
+        Extract a RuleSet object from self such as each rules have a param
+        greater than val.
         """
         rules_list = filter(lambda rg: rg.get_param(param) > val, self)        
         return RuleSet(rules_list)
     
     def extract_least(self, param, val):
         """
-        :param param:
-        :param val:
-        :return:
+        Extract a RuleSet object from self such as each rules have a param
+        least than val.
         """
         rules_list = filter(lambda rg: rg.get_param(param) < val, self)
         return RuleSet(rules_list)
     
     def extract_cp(self, cp):
         """
-        :param cp:
-        :return:
+        Extract a RuleSet object from self such as each rules have a
+        complexity cp.
         """
         rules_list = filter(lambda rg: rg.get_param('cp') == cp, self)
         return RuleSet(rules_list)
     
     def extract(self, param, val):
         """
-        :param param:
-        :param val:
-        :return:
+        Extract a RuleSet object from self such as each rules have a param
+        equal to val.
         """
         rules_list = filter(lambda rg: rg.get_param(param) == val, self)
         return RuleSet(rules_list)
     
     def index(self, rule):
         """
-        :param rule:
-        :return:
+        Get the index a rule in a RuleSet object (self).
         """
         assert rule.__class__ == Rule, 'Must be a rule object'
         self.get_rules().index(rule)
 
     def replace(self, idx, rule):
         """
-        :param idx:
-        :param rule:
-        :return:
+        Replace rule at position idx in a RuleSet object (self)
+        by a new rule.
         """
         self.rules.pop(idx)
         self.rules.insert(idx, rule)
     
     def sort_by(self, crit, maximized):
         """
-        :param crit:
-        :param maximized:
-        :return:
+        Sort the RuleSet object (self) by a criteria crit
         """
         self.rules.sort(key=lambda x: x.get_param(crit),
                         reverse=maximized)
@@ -1434,7 +1422,7 @@ class RuleSet(object):
     def calc_pred(self, y_app, x=None):
         """
         Computes the prediction vector
-        using an rule based partion
+        using an rule based partition
         """
         # Activation of all rules in the learning set
         activ_mat = np.matrix(map(lambda rules: rules.activation, self))
@@ -1501,7 +1489,7 @@ class RuleSet(object):
 
     def make_rule_names(self):
         """
-        Add an attribut name at each rule of self
+        Add an attribute name at each rule of self
         """
         map(lambda rule, rules_id: rule.make_name(rules_id),
             self, range(len(self)))
@@ -1552,11 +1540,11 @@ class Learning(BaseEstimator):
                     Otherwise it will be minimized
 
         method : {string type} default mse_function if y has more than
-                 2 diffretns values
+                 2 differents values
                  Choose among the mse_function and mse_function criterion
 
         sinicrit : {string type} default bernstein if the number of row is
-                   greatter than 30 else tscore
+                   greater than 30 else tscore
                    Choose among zscore, hoeffding and bernstein
 
         th : {float type such as 0 < th < 1} default 0.05
@@ -1575,8 +1563,8 @@ class Learning(BaseEstimator):
         covmax : {float type such as 0 < covmax < 1} default 1/log(nb_bucket)
                  Choose the minimal coverage of one rule
 
-        nb_candidats : {int type} default 300
-                    Choose the number of candidats to increase complexity
+        nb_candidates : {int type} default 300
+                    Choose the number of candidates to increase complexity
 
         intermax : {float type such as 0 <= intermax <= 1} default 1
                    Choose the maximal intersection rate begin a rule and
@@ -1602,8 +1590,8 @@ class Learning(BaseEstimator):
         if hasattr(self, 'nb_jobs') is False:
             self.nb_jobs = -2
 
-        if hasattr(self, 'nb_candidats') is False:
-            self.nb_candidats = 300
+        if hasattr(self, 'nb_candidates') is False:
+            self.nb_candidates = 300
 
         if hasattr(self, 'intermax') is False:
             self.intermax = 1.0
@@ -1736,7 +1724,7 @@ class Learning(BaseEstimator):
             for cp in range(2, complexity + 1):
                 print('Design for complexity %s' % str(cp))
                 if len(selected_rs.extract_cp(cp)) == 0:
-                    # seeking a set of rules with a comlexity cp
+                    # seeking a set of rules with a complexity cp
                     ruleset_cpup = self.up_complexity(cp)
 
                     if len(ruleset_cpup) > 0:
@@ -1843,21 +1831,21 @@ class Learning(BaseEstimator):
         for a given complexity (cp)
         """
         ruleset = self.get_param('ruleset')
-        ruleset_candidats = ruleset.extract_cp(rules_cp)
+        ruleset_candidates = ruleset.extract_cp(rules_cp)
 
-        nb_candidats = self.get_param('nb_candidats')
-        if len(ruleset_candidats) > nb_candidats:
-            pos_ruleset = ruleset_candidats.extract_greater('pred', 0)
-            neg_ruleset = ruleset_candidats.extract_least('pred', 0)
+        nb_candidates = self.get_param('nb_candidates')
+        if len(ruleset_candidates) > nb_candidates:
+            pos_ruleset = ruleset_candidates.extract_greater('pred', 0)
+            neg_ruleset = ruleset_candidates.extract_least('pred', 0)
 
-            id_pos = float(len(pos_ruleset)) / len(ruleset_candidats) * nb_candidats
-            id_neg = float(len(neg_ruleset)) / len(ruleset_candidats) * nb_candidats
+            id_pos = float(len(pos_ruleset)) / len(ruleset_candidates) * nb_candidates
+            id_neg = float(len(neg_ruleset)) / len(ruleset_candidates) * nb_candidates
 
             rules_list = pos_ruleset[:int(id_pos)]
             rules_list += neg_ruleset[:int(id_neg)]
 
-            ruleset_candidats = RuleSet(list(rules_list))
-        return ruleset_candidats
+            ruleset_candidates = RuleSet(list(rules_list))
+        return ruleset_candidates
     
     def find_candidates(self, cp):
         """
@@ -2020,8 +2008,8 @@ class Learning(BaseEstimator):
         ----------
         X : {array type or sparse matrix of shape = [n_samples, n_features]}
             The input samples. Internally, its dtype will be converted to
-            ``dtype=np.float32``. If a sparulesete matrix is provided, it will be
-            converted into a sparulesete ``csr_matrix``.
+            ``dtype=np.float32``. If a spares matrix is provided, it will be
+            converted into a spares ``csr_matrix``.
 
         check_input : bool type
 
@@ -2093,7 +2081,7 @@ class Learning(BaseEstimator):
         """Validate X whenever one tries to predict, apply, predict_proba"""
         if hasattr(self, 'fitted') is False:
             raise AttributeError("Estimator not fitted, "
-                                 "call 'fit' before rulesloiting the model.")
+                                 "call 'fit' before exploiting the model.")
 
         if check_input:
             X = check_array(X, dtype=None, force_all_finite=False)  # type: np.object_
@@ -2161,12 +2149,12 @@ class Learning(BaseEstimator):
                    col_pos='red', col_neg='blue'):
         """
         Plot the rectangle activation zone of rules in a 2D plot
-        the color is coresponding to the intensity of the prediction
+        the color is corresponding to the intensity of the prediction
         
         Parameters
         ----------
         var1 : {string type} 
-               Name of the firulesett variable
+               Name of the first variable
         
         var2 : {string type} 
                Name of the second variable
@@ -2259,7 +2247,7 @@ class Learning(BaseEstimator):
         
         Parameters
         ----------
-        x : {array-like, sparulesete matrix}, shape=[n_samples, n_features]
+        x : {array-like, sparse matrix}, shape=[n_samples, n_features]
             Features matrix, where n_samples in the number of samples and
             n_features is the number of features.
             
@@ -2279,7 +2267,7 @@ class Learning(BaseEstimator):
                      Parameter of the range of the colorbar
                      
         add_points: {boolean type}, optional
-                    Option to add the discret scatter of y
+                    Option to add the discrete scatter of y
                     
         add_score : {boolean type}, optional
                     Option to add the score on the graphic
@@ -2344,7 +2332,7 @@ class Learning(BaseEstimator):
 
     def plot_counter_variables(self):
         """
-        :return:
+        Function plots a graphical counter of variables used in rules.
         """
         ruleset = self.get_param('selected_rs')
         counter = get_variables_count(ruleset)
@@ -2362,10 +2350,10 @@ class Learning(BaseEstimator):
 
     def plot_counter(self):
         """
-        Function plots a graphical counter of varaibles used in rules.
+        Function plots a graphical counter of variables used in rules by modality.
         """
         nb_bucket = self.get_param('nb_bucket')
-        y_labels, counter = self.make_count_matrice(return_vars=True)
+        y_labels, counter = self.make_count_matrix(return_vars=True)
 
         x_labels = map(lambda i: str(i), range(nb_bucket))
 
@@ -2383,52 +2371,48 @@ class Learning(BaseEstimator):
         """
         Function plots a graphical correlation of rules.
         """
+        ruleset = self.get_param('selected_rs')
+        rules_names = ruleset.get_rules_name()
 
-        if scipy_dist is not None:
-            ruleset = self.get_param('selected_rs')
-            rules_names = ruleset.get_rules_name()
+        activation_list = map(lambda rules: rules.get_pred_vect(), ruleset)
+        pred_mat = np.matrix(activation_list)
 
-            activation_list = map(lambda rules: rules.get_pred_vect(), ruleset)
-            pred_mat = np.matrix(activation_list)
+        dist_vect = scipy_dist.pdist(pred_mat, metric=metric)
+        dist_mat = scipy_dist.squareform(dist_vect)
 
-            dist_vect = scipy_dist.pdist(pred_mat, metric=metric)
-            dist_mat = scipy_dist.squareform(dist_vect)
+        # Set up the matplotlib figure
+        f = plt.figure()
+        ax = plt.subplot()
 
-            # Set up the matplotlib figure
-            f = plt.figure()
-            ax = plt.subplot()
+        # Generate a mask for the upper triangle
+        mask = np.zeros_like(dist_mat, dtype=np.bool)
+        mask[np.triu_indices_from(mask)] = True
 
-            # Generate a mask for the upper triangle
-            mask = np.zeros_like(dist_mat, dtype=np.bool)
-            mask[np.triu_indices_from(mask)] = True
+        # Generate a custom diverging colormap
+        cmap = sns.diverging_palette(220, 10, as_cmap=True)
 
-            # Generate a custom diverging colormap
-            cmap = sns.diverging_palette(220, 10, as_cmap=True)
+        vmax = np.max(dist_mat)
+        vmin = np.min(dist_mat)
+        # center = np.mean(dist_mat)
 
-            vmax = np.max(dist_mat)
-            vmin = np.min(dist_mat)
-            # center = np.mean(dist_mat)
+        # Draw the heatmap with the mask and correct aspect ratio
+        sns.heatmap(dist_mat, cmap=cmap, ax=ax,
+                    vmax=vmax, vmin=vmin, center=1.,
+                    square=True, xticklabels=rules_names,
+                    yticklabels=rules_names, mask=mask)
 
-            # Draw the heatmap with the mask and correct aspect ratio
-            sns.heatmap(dist_mat, cmap=cmap, ax=ax,
-                        vmax=vmax, vmin=vmin, center=1.,
-                        square=True, xticklabels=rules_names,
-                        yticklabels=rules_names, mask=mask)
+        plt.yticks(rotation=0)
+        plt.xticks(rotation=90)
 
-            plt.yticks(rotation=0)
-            plt.xticks(rotation=90)
-
-            return f
-        else:
-            raise ImportError("The scipy package is required to run this function")
+        return f
 
     def plot_intensity(self):
         """
-        Function plots a graphical counter of varaibles used in rules.
+        Function plots a graphical counter of variables used in rules.
         """
 
-        y_labels, counter = self.make_count_matrice(return_vars=True)
-        intensity = self.make_count_matrice(add_pred=True)
+        y_labels, counter = self.make_count_matrix(return_vars=True)
+        intensity = self.make_count_matrix(add_pred=True)
 
         nb_bucket = self.get_param('nb_bucket')
         x_labels = map(lambda i: str(i), range(nb_bucket))
@@ -2449,11 +2433,9 @@ class Learning(BaseEstimator):
 
         return f
 
-    def make_count_matrice(self, add_pred=False, return_vars=False):
+    def make_count_matrix(self, add_pred=False, return_vars=False):
         """
-        :param add_pred:
-        :param return_vars:
-        :return:
+        Return a count matrix of each variable in each modality
         """
         ruleset = self.get_param('selected_rs')
         nb_bucket = self.get_param('nb_bucket')
