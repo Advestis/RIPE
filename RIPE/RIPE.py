@@ -32,7 +32,7 @@ Functions
 """
 
 
-def make_rules(feature_name, feature_index, X, y, method, sini_crit,
+def make_rules(feature_name, feature_index, X, y, method, signi_crit,
                th, cov_max, yreal, ymean, ystd):
     """
     Evaluate all suitable rules (i.e satisfying all criteria)
@@ -55,7 +55,7 @@ def make_rules(feature_name, feature_index, X, y, method, sini_crit,
     method : {string type}
              The method mse_function or mse_function criterion
 
-    sini_crit : {string type}
+    signi_crit : {string type}
                 The significance test
 
     th : {float type such as 0 < th < 1}
@@ -102,7 +102,7 @@ def make_rules(feature_name, feature_index, X, y, method, sini_crit,
                                             values=values)
 
                 rule = Rule(conditions)
-                rules_list.append(eval_rule(rule, X, y, method, sini_crit, th,
+                rules_list.append(eval_rule(rule, X, y, method, signi_crit, th,
                                             cov_max, yreal, ymean, ystd))
 
         else:
@@ -116,14 +116,14 @@ def make_rules(feature_name, feature_index, X, y, method, sini_crit,
                                         values=values)
 
             rule = Rule(conditions)
-            rules_list.append(eval_rule(rule, X, y, method, sini_crit, th,
+            rules_list.append(eval_rule(rule, X, y, method, signi_crit, th,
                                         cov_max, yreal, ymean, ystd))
 
     rules_list = filter(None, rules_list)
     return rules_list
 
 
-def eval_rule(rule, X, y, method, sini_crit, th,
+def eval_rule(rule, X, y, method, signi_crit, th,
               cov_max, yreal, ymean, ystd):
     """
     Calculation of all statistics of an rules
@@ -142,7 +142,7 @@ def eval_rule(rule, X, y, method, sini_crit, th,
     method : {string type}
              The methode mse_function or mse_function criterion
 
-    sini_crit : {string type}
+    signi_crit : {string type}
                 The significance test
 
     th : {float type such as 0 < th < 1}
@@ -169,7 +169,7 @@ def eval_rule(rule, X, y, method, sini_crit, th,
 
     """
     rule.calc_stats(x=X, y=y, method=method,
-                    sini_crit=sini_crit, th=th,
+                    signi_crit=signi_crit, th=th,
                     cov_max=cov_max, yreal=yreal,
                     ymean=ymean, ystd=ystd)
 
@@ -1034,7 +1034,7 @@ class Rule(object):
             return None
 
     def calc_stats(self, x, y, method='mse_function',
-                   sini_crit='hoeffding', th=0.05,
+                   signi_crit='hoeffding', th=0.05,
                    cov_max=0.5, yreal=None, ymean=0,
                    ystd=1):
         """
@@ -1051,7 +1051,7 @@ class Rule(object):
         method : {string type}
                  The method mse_function or mse_function criterion
 
-        sini_crit : {string type}
+        signi_crit : {string type}
                     The significance test
 
         th : {float type such as 0 < th < 1}, default 0.05
@@ -1100,19 +1100,19 @@ class Rule(object):
             rez = calc_crit(pred_vect, yreal, ymean, ystd, method)
             self.set_params(crit=rez)
 
-            if sini_crit == 'zscore':
-                sini_th = calc_zscore(active_vect, y, th)
-            elif sini_crit == 'tscore':
-                sini_th = calc_tscore(active_vect, y, th)
-            elif sini_crit == 'hoeffding':
-                sini_th = calc_hoeffding(active_vect, y, th)
-            elif sini_crit == 'bernstein':
-                sini_th = calc_bernstein(active_vect, y, th)
+            if signi_crit == 'zscore':
+                signi_th = calc_zscore(active_vect, y, th)
+            elif signi_crit == 'tscore':
+                signi_th = calc_tscore(active_vect, y, th)
+            elif signi_crit == 'hoeffding':
+                signi_th = calc_hoeffding(active_vect, y, th)
+            elif signi_crit == 'bernstein':
+                signi_th = calc_bernstein(active_vect, y, th)
             else:
-                sini_th = 0
+                signi_th = 0
 
-            self.set_params(th=sini_th)
-            if abs(pred) < sini_th:
+            self.set_params(th=signi_th)
+            if abs(pred) < signi_th:
                 self.set_params(out=True)
                 self.set_params(reason='Concentration')
                 return
@@ -1547,7 +1547,7 @@ class Learning(BaseEstimator):
                  2 differents values
                  Choose among the mse_function and mse_function criterion
 
-        sinicrit : {string type} default bernstein if the number of row is
+        signicrit : {string type} default bernstein if the number of row is
                    greater than 30 else tscore
                    Choose among zscore, hoeffding and bernstein
 
@@ -1653,14 +1653,14 @@ class Learning(BaseEstimator):
 
             self.set_params(covmax=covmax)
 
-        if hasattr(self, 'sinicrit') is False:
+        if hasattr(self, 'signicrit') is False:
             if y.shape[0] > 30:
-                sinicrit = 'bernstein'  # 'zscore' 'hoeffding' 'bernstein'
+                signicrit = 'bernstein'  # 'zscore' 'hoeffding' 'bernstein'
             else:
                 # We use a t-test for the small data
-                sinicrit = 'tscore'
+                signicrit = 'tscore'
 
-            self.set_params(sinicrit=sinicrit)
+            self.set_params(signicrit=signicrit)
 
         if hasattr(self, 'calcmethod') is False:
             if len(set(y)) > 2:
@@ -1768,7 +1768,7 @@ class Learning(BaseEstimator):
         features_index = self.get_param('features_index')
         X = self.get_param('X')
         method = self.get_param('calcmethod')
-        sini_crit = self.get_param('sinicrit')
+        signi_crit = self.get_param('signicrit')
         th = self.get_param('th')
         y = self.get_param('y')
         yreal = self.get_param('yreal')
@@ -1780,13 +1780,13 @@ class Learning(BaseEstimator):
 
         if jobs == 1:
             ruleset = map(lambda var, idx: make_rules(var, idx, X, y, method,
-                                                      sini_crit, th,
+                                                      signi_crit, th,
                                                       cov_max, yreal, ymean,
                                                       ystd),
                           features_name, features_index)
         else:
             ruleset = Parallel(n_jobs=jobs, backend="multiprocessing")(
-                delayed(make_rules)(var, idx, X, y, method, sini_crit, th,
+                delayed(make_rules)(var, idx, X, y, method, signi_crit, th,
                                     cov_max, yreal, ymean, ystd)
                 for var, idx in zip(features_name, features_index))
 
@@ -1804,7 +1804,7 @@ class Learning(BaseEstimator):
         nb_jobs = self.get_param('nb_jobs')
         X = self.get_param('X')
         method = self.get_param('calcmethod')
-        sini_crit = self.get_param('sinicrit')
+        signi_crit = self.get_param('signicrit')
         th = self.get_param('th')
         y = self.get_param('y')
         yreal = self.get_param('yreal')
@@ -1816,12 +1816,12 @@ class Learning(BaseEstimator):
 
         if len(rules_list) > 0:
             if nb_jobs == 1:
-                ruleset = map(lambda rule: eval_rule(rule, X, y, method, sini_crit, th,
+                ruleset = map(lambda rule: eval_rule(rule, X, y, method, signi_crit, th,
                                                      cov_max, yreal, ymean, ystd),
                               rules_list)
             else:
                 ruleset = Parallel(n_jobs=nb_jobs, backend="multiprocessing")(
-                    delayed(eval_rule)(rule, X, y, method, sini_crit, th,
+                    delayed(eval_rule)(rule, X, y, method, signi_crit, th,
                                        cov_max, yreal, ymean, ystd)
                     for rule in rules_list)
 
