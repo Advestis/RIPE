@@ -2530,7 +2530,7 @@ class Learning(BaseEstimator):
         selected_df = df[['Conditions', 'Coverage',
                           'Prediction', 'Z', 'Criterion']].copy()
     
-        no_rules_df = self.get_complementary_rules()
+        no_rules_df = self.get_complementary_rule()
         if no_rules_df is not None:
             selected_df = selected_df.append(no_rules_df)
 
@@ -2541,7 +2541,7 @@ class Learning(BaseEstimator):
     
         return selected_df
 
-    def get_complementary_rules(self):
+    def get_complementary_rule(self):
         """
         Returns
         -------
