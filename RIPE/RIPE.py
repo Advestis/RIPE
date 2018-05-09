@@ -59,6 +59,7 @@ def make_condition(rule):
             conditions_str += ' = '
             conditions_str += str(conditions[2][i])
         else:
+            conditions_str += conditions[0][i]
             conditions_str += ' $\in$ ['
             conditions_str += str(conditions[2][i])
             conditions_str += ', '
