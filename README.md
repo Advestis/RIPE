@@ -62,6 +62,10 @@ To have the Pandas DataFrame of the selected rules
 ```
 ripe.selected_rs.to_df()
 ```
+Or, one can use
+```
+ripe.make_selected_df()
+```
 To draw the distance between selected rules
 ```
 ripe.plot_dist()
