@@ -32,6 +32,41 @@ Functions
 """
 
 
+def make_condition(rule):
+    """
+    Evaluate all suitable rules (i.e satisfying all criteria)
+    on a given feature.
+
+    Parameters
+    ----------
+    rule : {rule type}
+           A rule
+    
+    Return
+    ------
+    conditions_str : {str type}
+                     A new string for the condition of the rule
+    """
+    conditions = rule.get_param('conditions').get_attr()
+    cp = rule.get_param('cp')
+    
+    conditions_str = ''
+    for i in range(cp):
+        if i > 0:
+            conditions_str += ' & '
+            conditions_str += conditions[0][i]
+        if conditions[2][i] == conditions[3][i]:
+            conditions_str += ' = '
+            conditions_str += str(conditions[2][i])
+        else:
+            conditions_str += ' $\in$ ['
+            conditions_str += str(conditions[2][i])
+            conditions_str += ', '
+            conditions_str += str(conditions[3][i])
+            conditions_str += ']'
+    return conditions_str
+
+
 def make_rules(feature_name, feature_index, X, y, method, signi_crit,
                th, cov_max, yreal, ymean, ystd):
     """
@@ -479,6 +514,21 @@ def calc_crit(pred_vect, y,
         raise 'Method %s unknown' % method
 
     return crit
+
+
+def calc_zvalue(active_vect, y, th, signi_crit):
+    if signi_crit == 'zscore':
+        signi_th = calc_zscore(active_vect, y, th)
+    elif signi_crit == 'tscore':
+        signi_th = calc_tscore(active_vect, y, th)
+    elif signi_crit == 'hoeffding':
+        signi_th = calc_hoeffding(active_vect, y, th)
+    elif signi_crit == 'bernstein':
+        signi_th = calc_bernstein(active_vect, y, th)
+    else:
+        signi_th = 0
+    
+    return signi_th
 
 
 def calc_zscore(active_vect, y, th):
@@ -1100,16 +1150,7 @@ class Rule(object):
             rez = calc_crit(pred_vect, yreal, ymean, ystd, method)
             self.set_params(crit=rez)
 
-            if signi_crit == 'zscore':
-                signi_th = calc_zscore(active_vect, y, th)
-            elif signi_crit == 'tscore':
-                signi_th = calc_tscore(active_vect, y, th)
-            elif signi_crit == 'hoeffding':
-                signi_th = calc_hoeffding(active_vect, y, th)
-            elif signi_crit == 'bernstein':
-                signi_th = calc_bernstein(active_vect, y, th)
-            else:
-                signi_th = 0
+            signi_th = calc_zvalue(active_vect, y, th, signi_crit)
 
             self.set_params(th=signi_th)
             if abs(pred) < signi_th:
@@ -2471,6 +2512,79 @@ class Learning(BaseEstimator):
         else:
             return count_mat.T
 
+    def make_selected_df(self):
+        """
+        Returns
+        -------
+        selected_df : {DataFrame type}
+                      DataFrame of selected RuleSet for presentation
+        """
+        selected_rs = self.get_param('selected_rs')
+        df = selected_rs.to_df()
+        
+        df.rename(columns={"Cov": "Coverage", "Pred": "Prediction",
+                           'Th': 'Z', 'Crit': 'Criterion'},
+                  inplace=True)
+        
+        df['Conditions'] = map(lambda rule: make_condition(rule), selected_rs)
+        selected_df = df[['Conditions', 'Coverage',
+                          'Prediction', 'Z', 'Criterion']].copy()
+    
+        no_rules_df = self.get_complementary_rules()
+        if no_rules_df is not None:
+            selected_df = selected_df.append(no_rules_df)
+
+        selected_df['Coverage'] = selected_df.Coverage.round(2)
+        selected_df['Prediction'] = selected_df.Prediction.round(2)
+        selected_df['Z'] = selected_df.Z.round(2)
+        selected_df['Criterion'] = selected_df.Criterion.round(2)
+    
+        return selected_df
+
+    def get_complementary_rules(self):
+        """
+        Returns
+        -------
+        norule_df : {DataFrame type or None}
+                    DataFrame with the no activated rule.
+        """
+        y = self.get_param('y')
+        ymean = self.get_param('ymean')
+        ystd = self.get_param('ystd')
+        yreal = self.get_param('yreal')
+        th = self.get_param('th')
+        method = self.get_param('calcmethod')
+        signi_crit = self.get_param('signicrit')
+        rs = self.get_param('selected_rs')
+    
+        sum_vect = reduce(operator.add, map(lambda rg: rg.get_activation(), rs))
+        sum_vect = np.array(map(lambda x: bool(x), sum_vect))
+        active_vect = np.logical_not(sum_vect)
+    
+        cov = sum(active_vect) / float(len(active_vect))
+    
+        if cov > 0:
+            pred = calc_prediction(active_vect, y)
+            z = calc_zvalue(active_vect, y, th, signi_crit)
+            pred_vect = active_vect * pred
+            cplt_val = calc_prediction(1 - active_vect, y)
+            np.place(pred_vect, pred_vect == 0, cplt_val)
+            crit = calc_crit(pred_vect, yreal, ymean, ystd, method)
+        
+            norule_df = pd.DataFrame(index=['R ' + str(len(rs))],
+                                     columns=['Conditions', 'Coverage',
+                                              'Prediction', 'Z', 'Criterion'])
+            norule_df['Conditions'] = 'No rule activated'
+            norule_df['Coverage'] = cov
+            norule_df['Prediction'] = pred
+            norule_df['Z'] = z
+            norule_df['Criterion'] = crit
+        
+            return norule_df
+    
+        else:
+            return None
+        
     """------   Getters   -----"""
     def get_param(self, param):
         """
