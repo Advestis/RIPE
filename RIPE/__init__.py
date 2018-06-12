@@ -1,3 +1,3 @@
-from .RIPE import RuleCondditions, Rule, RuleSet, Learning
+from .RIPE import RuleConditions, Rule, RuleSet, Learning
 
 __all__ = ["RIPE"]
