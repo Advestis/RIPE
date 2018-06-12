@@ -1157,7 +1157,7 @@ class Rule(object):
             signi_th = calc_zvalue(active_vect, y, th, signi_crit)
 
             self.set_params(th=signi_th)
-            if abs(pred) < signi_th:
+            if abs(pred) < signi_th or signi_th == 0.0:
                 self.set_params(out=True)
                 self.set_params(reason='Concentration')
                 return
