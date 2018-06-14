@@ -36,12 +36,11 @@ def make_condition(rule):
     """
     Evaluate all suitable rules (i.e satisfying all criteria)
     on a given feature.
-
     Parameters
     ----------
     rule : {rule type}
            A rule
-    
+
     Return
     ------
     conditions_str : {str type}
@@ -54,17 +53,18 @@ def make_condition(rule):
     for i in range(cp):
         if i > 0:
             conditions_str += ' & '
-            conditions_str += conditions[0][i]
+
+        conditions_str += conditions[0][i]
         if conditions[2][i] == conditions[3][i]:
             conditions_str += ' = '
             conditions_str += str(conditions[2][i])
         else:
-            conditions_str += conditions[0][i]
             conditions_str += ' $\in$ ['
             conditions_str += str(conditions[2][i])
             conditions_str += ', '
             conditions_str += str(conditions[3][i])
             conditions_str += ']'
+
     return conditions_str
 
 
