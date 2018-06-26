@@ -17,7 +17,7 @@ from scipy.stats import t, norm
 
 from matplotlib import patches
 import matplotlib.pyplot as plt
-import seaborn.apionly as sns
+# import seaborn.apionly as sns
 
 from sklearn.base import BaseEstimator
 from sklearn.metrics import accuracy_score, r2_score
