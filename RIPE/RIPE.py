@@ -1949,7 +1949,9 @@ class Learning(BaseEstimator):
             sub_ruleset = ruleset.extract_cp(cp)
         else:
             sub_ruleset = copy.deepcopy(ruleset)
-
+        
+        sub_ruleset = RuleSet(filter(lambda rg: rg.get_param('th') != 0,
+                                     sub_ruleset))
         sub_ruleset.sort_by('crit', maximized)
         selected_rs = self.minimized_risk(sub_ruleset)
 
