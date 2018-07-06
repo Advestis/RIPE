@@ -2515,7 +2515,7 @@ class Learning(BaseEstimator):
                         else:
                             count_mat[b, var_id] += 1
                 else:
-                    str_id.append(vars_list.index(var_name[j]))
+                    str_id += [vars_list.index(var_name[j])]
                     
         del vars_list[str_id]
         count_mat = np.delete(count_mat, str_id, 0)
