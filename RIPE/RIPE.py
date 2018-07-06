@@ -2415,7 +2415,7 @@ class Learning(BaseEstimator):
         ax = plt.subplot()
 
         g = sns.heatmap(counter, xticklabels=x_labels, yticklabels=y_labels,
-                        cmap='Reds', linewidths=.05, ax=ax)
+                        cmap='Reds', linewidths=.05, ax=ax, center=0.0)
         g.xaxis.tick_top()
         plt.yticks(rotation=0)
 
@@ -2478,9 +2478,9 @@ class Learning(BaseEstimator):
 
         f = plt.figure()
         ax = plt.subplot()
-
+        
         g = sns.heatmap(val, xticklabels=x_labels, yticklabels=y_labels,
-                        cmap='bwr', linewidths=.05, ax=ax)
+                        cmap='bwr', linewidths=.05, ax=ax, center=0.0)
         g.xaxis.tick_top()
         plt.yticks(rotation=0)
 
@@ -2506,12 +2506,13 @@ class Learning(BaseEstimator):
             bmax = cd.get_param('bmax')
 
             for j in range(len(var_name)):
-                for b in range(int(bmin[j]), int(bmax[j])+1):
-                    var_id = vars_list.index(var_name[j])
-                    if add_pred:
-                        count_mat[b, var_id] += rg.get_param('pred')
-                    else:
-                        count_mat[b, var_id] += 1
+                if type(bmin[j]) != str:
+                    for b in range(int(bmin[j]), int(bmax[j])+1):
+                        var_id = vars_list.index(var_name[j])
+                        if add_pred:
+                            count_mat[b, var_id] += rg.get_param('pred')
+                        else:
+                            count_mat[b, var_id] += 1
 
         if return_vars:
             return vars_list, count_mat.T
