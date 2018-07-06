@@ -2498,7 +2498,8 @@ class Learning(BaseEstimator):
         vars_list = map(lambda item: item[0], counter)
 
         count_mat = np.zeros((nb_bucket, len(vars_list)))
-
+        str_id = []
+        
         for rg in ruleset:
             cd = rg.conditions
             var_name = cd.get_param('features_name')
@@ -2514,8 +2515,11 @@ class Learning(BaseEstimator):
                         else:
                             count_mat[b, var_id] += 1
                 else:
-                    vars_list.pop(vars_list.index(var_name[j]))
+                    str_id.append(vars_list.index(var_name[j]))
                     
+        vars_list.pop(str_id)
+        count_mat = np.delete(count_mat, str_id, 0)
+        
         if return_vars:
             return vars_list, count_mat.T
         else:
