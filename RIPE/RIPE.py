@@ -2513,7 +2513,9 @@ class Learning(BaseEstimator):
                             count_mat[b, var_id] += rg.get_param('pred')
                         else:
                             count_mat[b, var_id] += 1
-
+                else:
+                    vars_list.pop(vars_list.index(var_name[j]))
+                    
         if return_vars:
             return vars_list, count_mat.T
         else:
