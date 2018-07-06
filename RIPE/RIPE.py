@@ -2517,7 +2517,7 @@ class Learning(BaseEstimator):
                 else:
                     str_id.append(vars_list.index(var_name[j]))
                     
-        vars_list.pop(str_id)
+        del vars_list[str_id]
         count_mat = np.delete(count_mat, str_id, 0)
         
         if return_vars:
