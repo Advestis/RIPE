@@ -2518,12 +2518,12 @@ class Learning(BaseEstimator):
                     str_id += [vars_list.index(var_name[j])]
 
         vars_list = [i for j, i in enumerate(vars_list) if j not in str_id]
-        count_mat = np.delete(count_mat, str_id, 0)
+        count_mat = np.delete(count_mat.T, str_id, 0)
         
         if return_vars:
-            return vars_list, count_mat.T
+            return vars_list, count_mat
         else:
-            return count_mat.T
+            return count_mat
 
     def make_selected_df(self):
         """
