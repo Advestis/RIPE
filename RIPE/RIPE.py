@@ -518,6 +518,27 @@ def calc_crit(pred_vect, y,
 
 
 def calc_zvalue(active_vect, y, th, signi_crit):
+    """
+    Parameters
+    ----------
+    active_vect : {array type}
+                  A activation vector. It means a sparse array with two
+                  different values 0, if the rule is not active
+                  and the 1 is the rule is active.
+
+    y : {array type}
+        The target values (real numbers)
+
+    th : {float type}
+         The threshold for the 1-type error
+    
+    signi_crit : {string type}
+                 The chosen significant criterion
+
+    Return
+    ------
+    The bound for the conditional expectation to be significant
+    """
     if signi_crit == 'zscore':
         signi_th = calc_zscore(active_vect, y, th)
     elif signi_crit == 'tscore':
@@ -2570,7 +2591,7 @@ class Learning(BaseEstimator):
         signi_crit = self.get_param('signicrit')
         rs = self.get_param('selected_rs')
     
-        sum_vect = reduce(operator.add, map(lambda rg: rg.get_activation(), rs))
+        sum_vect = np.sum(map(lambda rg: rg.get_activation(), rs), axis=0)
         sum_vect = np.array(map(lambda x: bool(x), sum_vect))
         active_vect = np.logical_not(sum_vect)
     
