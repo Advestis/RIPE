@@ -793,7 +793,7 @@ def discretize(xcol, nb_bucket, bins=None):
         notnan_vect = np.extract(np.isfinite(xcol), xcol)
         nan_index = ~np.isfinite(xcol)
         # Test if xcol have more than nb_bucket different values
-        if len(set(notnan_vect)) >= nb_bucket:
+        if len(set(notnan_vect)) >= nb_bucket or bins is not None:
             if bins is None:
                 bins = find_bins(xcol, nb_bucket)
             # discretization of the xcol with bins
@@ -1327,11 +1327,11 @@ class RuleSet(object):
     """
     Class for a ruleset. It's a kind of list of rule object
     """
-    def __init__(self, param):
-        if type(param) == list:
-            self.rules = param
-        elif type(param) == RuleSet:
-            self.rules = param.get_rules()
+    def __init__(self, rs):
+        if type(rs) == list:
+            self.rules = rs
+        elif type(rs) == RuleSet:
+            self.rules = rs.get_rules()
 
     def __repr__(self):
         return self.__str__()
