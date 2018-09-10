@@ -528,7 +528,7 @@ def calc_zvalue(active_vect, y, th, signi_crit):
         signi_th = calc_bernstein(active_vect, y, th)
     elif signi_crit == 'variance':
         sub_y = np.extract(active_vect > 0, y)
-        signi_th = np.sqrt(max(0, np.var(y) - np.var(sub_y)))
+        signi_th = np.sqrt(max(0.0, float(np.var(y) - np.var(sub_y))))
     else:
         signi_th = 0
     
@@ -1643,7 +1643,7 @@ class Learning(BaseEstimator):
             self.nb_candidates = 300
 
         if hasattr(self, 'intermax') is False:
-            self.intermax = 1.0
+            self.intermax = 1.0 - np.finfo(float).eps
 
         if hasattr(self, 'fullselection') is False:
             self.fullselection = True
