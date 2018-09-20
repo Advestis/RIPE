@@ -550,7 +550,7 @@ def calc_zvalue(active_vect, y, th, signi_crit):
     elif signi_crit == 'variance':
         cov = calc_coverage(active_vect)
         sub_y = np.extract(active_vect > 0, y)
-        signi_th = np.sqrt(max(0.0, 1./cov * (np.mean(sub_y**2) - 1./cov * np.mean(sub_y))))
+        signi_th = np.sqrt(max(0.0, 1./cov * (np.mean(sub_y**2) - 1./cov * np.mean(sub_y)**2)))
     else:
         signi_th = 0
     
