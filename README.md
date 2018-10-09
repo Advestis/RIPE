@@ -1,7 +1,5 @@
 # RIPE
-Implementation of a rule based prediction algorithm called RIPE (Rule Induction
-Partitioning Estimate). RIPE is a deterministic and interpretable algorithm, for regression problem. 
-https://arxiv.org/abs/1807.04602
+Implementation of a rule based prediction algorithm called RIPE (Rule Induction Partitioning Estimate). RIPE is a deterministic and interpretable algorithm, for regression problem. It has been presented at the International Conference on Machine Learning and Data Mining in Pattern Recognition 2018 (MLDM 18). The paper is available in arXiv https://arxiv.org/abs/1807.04602.
 
 ## Getting Started
 These instructions will get you a copy of the project up and running on your
