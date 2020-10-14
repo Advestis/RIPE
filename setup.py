@@ -64,7 +64,7 @@ version = get_version()
 
 if __name__ == "__main__":
     setup(
-        name="RIPE",
+        name="ripe-algorithm",
         version=version,
         author="Vincent MARGOT",
         author_email="vincent.margot@hotmail.fr",
