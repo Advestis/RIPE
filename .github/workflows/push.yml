@@ -1,0 +1,35 @@
+on:
+  push:
+    branches:
+      - master
+
+name: master
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ 3.6 ]
+    steps:
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: build
+        run: |
+          git clone https://github.com/Advestis/RIPE .
+          python -m pip install --upgrade pip
+          pip install setuptools
+          python setup.py sdist
+      - name: topypi
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: ${{ secrets.pypi_login }}
+          password: ${{ secrets.pypi_passwd }}
+      - name: todocker
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.docker_login }}
+          password: ${{ secrets.docker_passwd }}
+          repository: advestis/ripe
+          tag_with_ref: true
