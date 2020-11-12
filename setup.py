@@ -59,7 +59,17 @@ except UnicodeDecodeError:
         long_description = "".join(lines)
 
 requirements = Path("requirements.txt").read_text().splitlines()
-version = get_version()
+try:
+    version = get_version()
+    with open("VERSION.txt", "w") as vfile:
+        vfile.write(version)
+except FileNotFoundError as e:
+    # noinspection PyBroadException
+    try:
+        with open("VERSION.txt", "r") as vfile:
+            version = vfile.readline()
+    except Exception:
+        version = None
 
 
 if __name__ == "__main__":
