@@ -1,5 +1,4 @@
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
-PACKAGE := $(notdir $(patsubst %/,%,$(dir $(mkfile_path))))
 
 
 help:
@@ -19,9 +18,9 @@ doc:
 
 	@if [ -f gspip-requirements.txt ] ; then if command -v gspip > /dev/null ; then gspip --upgrade install $(grep -vE "^\s*#" gspip-requirements.txt  | tr "\n" " ") else git clone https://github.com/Advestis/gspip && gspip/gspip.sh --upgrade install $(grep -vE "^\s*#" gspip-requirements.txt  | tr "\n" " ") && rm -rf gspip ; fi ; fi
 
-	@pip3 uninstall "$(PACKAGE)" -y
+	@pip3 uninstall ripe-algorithm -y
 	@pip3 install setuptools
 	@python setup.py $@
 	@if [ -d "dist" ] && [ $@ != "sdist" ] ; then rm -r dist ; fi
 	@if [ -d "build" ] ; then rm -r build ; fi
-	@if ls "$(PACKAGE)".egg-info* &> /dev/null ; then rm -r "$(PACKAGE)".egg-info* ; fi
+	@if [ -d "ripe_algorithm.egg-info" ] ; then rm -r ripe_algorithm.egg-info ; fi
