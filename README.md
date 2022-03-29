@@ -1,3 +1,26 @@
+[![doc](https://img.shields.io/badge/-Documentation-blue)](https://advestis.github.io/RIPE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+#### Status
+![push](https://github.com/Advestis/RIPE/actions/workflows/push.yml/badge.svg)
+
+![maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
+![issues](https://img.shields.io/github/issues/Advestis/RIPE.svg)
+![pr](https://img.shields.io/github/issues-pr/Advestis/RIPE.svg)
+
+
+#### Compatibilities
+![ubuntu](https://img.shields.io/badge/Ubuntu-supported--tested-success)
+![unix](https://img.shields.io/badge/Other%20Unix-supported--untested-yellow)
+
+![python](https://img.shields.io/pypi/pyversions/RIPE)
+
+
+##### Contact
+[![linkedin](https://img.shields.io/badge/LinkedIn-Advestis-blue)](https://www.linkedin.com/company/advestis/)
+[![website](https://img.shields.io/badge/website-Advestis.com-blue)](https://www.advestis.com/)
+[![mail](https://img.shields.io/badge/mail-maintainers-blue)](mailto:pythondev@advestis.com)
+
 # RIPE
 Implementation of a rule based prediction algorithm called RIPE (Rule Induction Partitioning Estimate). RIPE is a deterministic and interpretable algorithm, for regression problem. It has been presented at the International Conference on Machine Learning and Data Mining in Pattern Recognition 2018 (MLDM 18). The paper is available in arXiv https://arxiv.org/abs/1807.04602.
 
