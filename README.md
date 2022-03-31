@@ -4,7 +4,7 @@
 #### Status
 ![push](https://github.com/Advestis/RIPE/actions/workflows/push.yml/badge.svg)
 
-![maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
+![maintained](https://img.shields.io/badge/Maintained%3F-no-red.svg)
 ![issues](https://img.shields.io/github/issues/Advestis/RIPE.svg)
 ![pr](https://img.shields.io/github/issues-pr/Advestis/RIPE.svg)
 
